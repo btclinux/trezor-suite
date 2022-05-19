@@ -15,17 +15,20 @@ import { SETTINGS } from '@suite-config';
 import type { Account } from '@wallet-types';
 import type { Dispatch, GetState } from '@suite-types';
 
+type CreateAccountAction = { type: typeof ACCOUNT.CREATE; payload: Account };
+type UpdateAccountAction = { type: typeof ACCOUNT.UPDATE; payload: Account };
+type ChangeVisibilityAccountAction = { type: typeof ACCOUNT.CHANGE_VISIBILITY; payload: Account };
 export type AccountAction =
-    | { type: typeof ACCOUNT.CREATE; payload: Account }
-    | { type: typeof ACCOUNT.REMOVE; payload: Account[] }
-    | { type: typeof ACCOUNT.CHANGE_VISIBILITY; payload: Account }
-    | { type: typeof ACCOUNT.UPDATE; payload: Account };
+    | CreateAccountAction
+    | UpdateAccountAction
+    | ChangeVisibilityAccountAction
+    | { type: typeof ACCOUNT.REMOVE; payload: Account[] };
 
 export const create = (
     deviceState: string,
     discoveryItem: DiscoveryItem,
     accountInfo: AccountInfo,
-): AccountAction => ({
+): CreateAccountAction => ({
     type: ACCOUNT.CREATE,
     payload: {
         deviceState,
@@ -71,7 +74,7 @@ export const create = (
     },
 });
 
-export const update = (account: Account, accountInfo: AccountInfo): AccountAction => ({
+export const update = (account: Account, accountInfo: AccountInfo): UpdateAccountAction => ({
     type: ACCOUNT.UPDATE,
     payload: {
         ...account,
@@ -95,7 +98,7 @@ export const update = (account: Account, accountInfo: AccountInfo): AccountActio
     },
 });
 
-export const updateAccount = (payload: Account): AccountAction => ({
+export const updateAccount = (payload: Account): UpdateAccountAction => ({
     type: ACCOUNT.UPDATE,
     payload,
 });
@@ -119,7 +122,10 @@ export const disableAccounts = () => (dispatch: Dispatch, getState: GetState) =>
     }
 };
 
-export const changeAccountVisibility = (payload: Account, visible = true): AccountAction => ({
+export const changeAccountVisibility = (
+    payload: Account,
+    visible = true,
+): ChangeVisibilityAccountAction => ({
     type: ACCOUNT.CHANGE_VISIBILITY,
     payload: {
         ...payload,
