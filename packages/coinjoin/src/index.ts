@@ -1,1 +1,2 @@
-export const CoinjoinClient = {};
+export { CoinjoinClient } from './Client';
+export * from './types';
