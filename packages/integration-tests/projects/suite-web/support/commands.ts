@@ -23,6 +23,7 @@ import {
     passThroughInitMetadata,
     passThroughSetPin,
     enableRegtestAndGetCoins,
+    createAccount,
 } from './utils/shortcuts';
 
 const command = require('cypress-image-snapshot/command');
@@ -112,6 +113,7 @@ declare global {
             }) => Chainable<Subject>;
             skipOn: (nameOrFlag: string | boolean, cb?: () => void) => Cypress.Chainable<any>;
             onlyOn: (nameOrFlag: string | boolean, cb?: () => void) => Cypress.Chainable<any>;
+            createAccount: (coin: string, accountNameAdd: string) => Chainable<Subject>;
         }
     }
 }
@@ -163,3 +165,4 @@ Cypress.Commands.add('skipOn', skipOn);
 Cypress.Commands.add('onlyOn', onlyOn);
 
 Cypress.Commands.add('text', { prevSubject: true }, subject => subject.text());
+Cypress.Commands.add('createAccount', createAccount);

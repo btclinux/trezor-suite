@@ -88,12 +88,12 @@ describe('Analytics', () => {
 
         // change fiat and check that it was logged
         cy.getTestElement('@settings/fiat-select/input').click({ force: true });
-        cy.getTestElement('@settings/fiat-select/option/huf').click({ force: true });
+        cy.getTestElement('@settings/fiat-select/option/Huf').click({ force: true });
         cy.wait('@data-fetch');
         cy.wrap(requests)
             .its(2)
             .should('have.property', 'c_type', EventType.SettingsGeneralChangeFiat);
-        cy.wrap(requests).its(2).should('have.property', 'fiat', 'huf');
+        cy.wrap(requests).its(2).should('have.property', 'fiat', 'Huf');
         cy.wrap(requests).its(2).should('have.property', 'c_instance_id').should('match', instance);
         cy.wrap(requests).should('have.length', 3);
 
