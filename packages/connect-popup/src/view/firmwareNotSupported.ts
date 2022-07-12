@@ -5,6 +5,13 @@ import { showView } from './common';
 
 export const firmwareNotSupported = (device: UiRequestUnexpectedDeviceMode['payload']) => {
     const view = showView('firmware-not-supported');
+
+    // showView may return undefined (if react component is available);
+    if (!view) {
+        console.error('view does not exist!');
+        return;
+    }
+
     if (!device.features) return;
     const { features } = device;
 

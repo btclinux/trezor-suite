@@ -1,6 +1,11 @@
 // origin: https://github.com/trezor/connect/blob/develop/src/js/popup/view/common.js
 
 import { POPUP, ERRORS, PopupInit, CoreMessage, ConnectSettings } from '@trezor/connect';
+import React from 'react';
+import * as ReactDOM from 'react-dom';
+
+import { ReactWrapper } from './react/support/ReactWrapper';
+import { Transport } from './react/views/Transport';
 
 export const header: HTMLElement = document.getElementsByTagName('header')[0];
 export const container: HTMLElement = document.getElementById('container')!;
@@ -47,23 +52,65 @@ export const clearView = () => {
     container.innerHTML = '';
 };
 
-export const showView = (className: string) => {
-    clearView();
+const reactified: Record<any, any> = {
+    transport: <Transport />,
+};
 
-    const view = views.getElementsByClassName(className);
-    if (view) {
-        const viewItem = view.item(0);
-        if (viewItem) {
-            container.innerHTML = viewItem.outerHTML;
-        }
-    } else {
-        const unknown = views.getElementsByClassName('unknown-view');
-        const unknownItem = unknown.item(0);
-        if (unknownItem) {
-            container.innerHTML = unknownItem.outerHTML;
-        }
+const renderReactView = (className: string, props: any) => {
+    const reactSlot = document.getElementById('react');
+    if (!reactSlot) {
+        console.error('element not found');
+        return;
     }
-    return container;
+
+    // Make react slot visible while removing legacy slot at the same time so that styles don't clash
+    const container = document.getElementById('container');
+    container?.remove();
+    reactSlot.style.display = 'flex';
+
+    // create a shadow root inside it
+    const shadow = reactSlot.attachShadow({ mode: 'open' });
+
+    // create the element where we would render our app
+    const renderIn = document.createElement('div');
+    renderIn.style.display = 'flex';
+    renderIn.style.flexDirection = 'column';
+    renderIn.style.flex = '1';
+
+    // append the renderIn element inside the styleSlot
+    shadow.appendChild(renderIn);
+
+    ReactDOM.render(
+        // todo: using ReactWrapper here? Or somewhere else?
+        React.cloneElement(<ReactWrapper>{reactified[className]}</ReactWrapper>, props),
+        renderIn,
+    );
+};
+
+export const showView = (className: string, props = {}) => {
+    // is view available in react?
+    if (reactified[className]) {
+        clearView();
+        renderReactView(className, props);
+    } else {
+        // else continue in the old way
+        clearView();
+
+        const view = views.getElementsByClassName(className);
+        if (view) {
+            const viewItem = view.item(0);
+            if (viewItem) {
+                container.innerHTML = viewItem.outerHTML;
+            }
+        } else {
+            const unknown = views.getElementsByClassName('unknown-view');
+            const unknownItem = unknown.item(0);
+            if (unknownItem) {
+                container.innerHTML = unknownItem.outerHTML;
+            }
+        }
+        return container;
+    }
 };
 
 export const getIframeElement = () => {

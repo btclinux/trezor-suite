@@ -79,7 +79,7 @@ const handleMessage = (event: MessageEvent<PopupEvent | UiEvent>) => {
             }
             break;
         case UI_REQUEST.TRANSPORT:
-            showView('transport');
+            showView('transport', { propMeow: 'meow' });
             break;
         case UI_REQUEST.SELECT_DEVICE:
             view.selectDevice(message.payload);
