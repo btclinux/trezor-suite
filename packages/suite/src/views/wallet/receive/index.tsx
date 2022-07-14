@@ -4,6 +4,7 @@ import { useDevice, useSelector, useActions } from '@suite-hooks';
 import * as receiveActions from '@wallet-actions/receiveActions';
 import { FreshAddress } from './components/FreshAddress';
 import { UsedAddresses } from './components/UsedAddresses';
+import { Coinjoin } from './components/Coinjoin';
 import { isPending, getAccountTransactions } from '@wallet-utils/transactionUtils';
 
 const Receive = () => {
@@ -36,6 +37,7 @@ const Receive = () => {
     return (
         <WalletLayout title="TR_NAV_RECEIVE" account={selectedAccount}>
             <WalletLayoutHeader title="TR_NAV_RECEIVE" />
+            <Coinjoin />
             <FreshAddress
                 account={account}
                 addresses={receive}
