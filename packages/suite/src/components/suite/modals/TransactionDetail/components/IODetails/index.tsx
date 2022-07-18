@@ -73,7 +73,7 @@ const IODetails = ({ tx }: Props) => {
                                     // consider faking it by showing the same value os the output
                                     <CryptoAmountWrapper>
                                         <FormattedCryptoAmount
-                                            value={input.value}
+                                            value={input.value as string}
                                             symbol={tx.symbol}
                                         />
                                         <Circle>&bull;</Circle>
@@ -96,7 +96,7 @@ const IODetails = ({ tx }: Props) => {
                             <IORow key={output.n}>
                                 <CryptoAmountWrapper>
                                     <FormattedCryptoAmount
-                                        value={output.value}
+                                        value={output.value as string}
                                         symbol={tx.symbol}
                                     />
                                     <Circle>&bull;</Circle>
