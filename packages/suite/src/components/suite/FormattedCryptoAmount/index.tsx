@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { HiddenPlaceholder, Sign } from '@suite-components';
 import { formatCurrencyAmount } from '@trezor/utils';
-import { NetworkSymbol } from '@wallet-types';
 import { networkAmountToSatoshi } from '@wallet-utils/accountUtils';
 import { isValuePositive, SignValue } from '@suite-components/Sign';
 import { useBitcoinAmountUnit } from '@wallet-hooks/useBitcoinAmountUnit';
 import { NETWORKS } from '@wallet-config';
+import { NetworkSymbol } from '@wallet-types';
 
 const Value = styled.span`
     font-variant-numeric: tabular-nums;
@@ -20,8 +20,8 @@ const Symbol = styled.span<{ isLowerCase: boolean }>`
 `;
 
 interface FormattedCryptoAmountProps {
-    value: string | number;
-    symbol: NetworkSymbol | undefined;
+    value: string | number | undefined;
+    symbol: string | undefined;
     signValue?: SignValue;
     disableHiddenPlaceholder?: boolean;
     isRawString?: boolean;
@@ -39,6 +39,10 @@ export const FormattedCryptoAmount = ({
     className,
 }: FormattedCryptoAmountProps) => {
     const { areSatsDisplayed } = useBitcoinAmountUnit();
+
+    if (!value) {
+        return null;
+    }
 
     const symbolFeatures = NETWORKS.find(network => network.symbol === symbol)?.features;
     const areSatsSupported = !!symbolFeatures?.includes('amount-unit');

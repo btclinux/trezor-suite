@@ -5,7 +5,7 @@ import { FiatValue, Translation, MetadataLabeling, FormattedCryptoAmount } from 
 import { ArrayElement } from '@suite/types/utils';
 import { getTxOperation, getTargetAmount } from '@wallet-utils/transactionUtils';
 import { isTestnet } from '@wallet-utils/accountUtils';
-import { NetworkSymbol, WalletAccountTransaction } from '@wallet-types';
+import { WalletAccountTransaction } from '@wallet-types';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { useActions } from '@suite-hooks';
 import TokenTransferAddressLabel from '../TokenTransferAddressLabel';
@@ -48,7 +48,7 @@ export const TokenTransfer = ({
                 !baseLayoutProps.singleRowLayout && (
                     <StyledCryptoAmount
                         value={transfer.amount}
-                        symbol={transfer.symbol as NetworkSymbol}
+                        symbol={transfer.symbol}
                         signValue={operation}
                     />
                 )
