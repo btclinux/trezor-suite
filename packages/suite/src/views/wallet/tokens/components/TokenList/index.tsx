@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import { variables, useTheme, Icon, Card } from '@trezor/components';
 import { FiatValue, FormattedCryptoAmount, TrezorLink } from '@suite-components';
-import { Account, NetworkSymbol } from '@wallet-types';
+import { Account } from '@wallet-types';
 
 const Wrapper = styled(Card)<{ isTestnet?: boolean }>`
     display: grid;
@@ -125,11 +125,7 @@ const TokenList = ({ tokens, explorerUrl, isTestnet, networkType }: Props) => {
                                 {t.balance && (
                                     <CryptoAmount
                                         value={t.balance}
-                                        symbol={
-                                            networkType === 'cardano'
-                                                ? undefined
-                                                : (t.symbol as NetworkSymbol)
-                                        }
+                                        symbol={networkType === 'cardano' ? undefined : t.symbol}
                                     />
                                 )}
                             </TokenValue>

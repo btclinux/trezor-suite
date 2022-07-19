@@ -4,7 +4,7 @@ import { variables, Icon, useTheme } from '@trezor/components';
 import { FormattedCryptoAmount } from '@suite-components';
 import { getTargetAmount, getTxHeaderSymbol, getTxOperation } from '@wallet-utils/transactionUtils';
 import TransactionHeader from '../TransactionHeader';
-import { NetworkSymbol, WalletAccountTransaction } from '@wallet-types';
+import { WalletAccountTransaction } from '@wallet-types';
 
 const Wrapper = styled.span`
     display: flex;
@@ -65,8 +65,7 @@ const TransactionHeading = ({
     const isSingleTokenTransaction = nTokens === 1;
     const target = transaction.targets[0];
     const transfer = transaction.tokens[0];
-    const targetSymbol =
-        transaction.type === 'self' ? transaction.symbol : (symbol as NetworkSymbol);
+    const targetSymbol = transaction.type === 'self' ? transaction.symbol : symbol;
     let amount = null;
 
     const [headingIsHovered, setHeadingIsHovered] = useState(false);

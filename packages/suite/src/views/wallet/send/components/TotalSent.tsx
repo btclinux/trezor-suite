@@ -4,7 +4,6 @@ import { variables } from '@trezor/components';
 import { useSendFormContext } from '@wallet-hooks';
 import { formatNetworkAmount, formatAmount } from '@wallet-utils/accountUtils';
 import { Card, Translation, FiatValue, FormattedCryptoAmount } from '@suite-components';
-import { NetworkSymbol } from '@wallet-types';
 
 const StyledCard = styled(Card)`
     display: flex;
@@ -96,7 +95,7 @@ export const TotalSent = () => {
                                     ? formatAmount(transactionInfo.totalSpent, tokenInfo.decimals)
                                     : formatNetworkAmount(transactionInfo.totalSpent, symbol)
                             }
-                            symbol={(tokenInfo ? tokenInfo.symbol : symbol) as NetworkSymbol}
+                            symbol={tokenInfo ? tokenInfo.symbol : symbol}
                         />
                     </TotalSentCoin>
                     <TotalSentFiat>
