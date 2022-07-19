@@ -24,7 +24,7 @@ const LoadingText = styled(P)`
 `;
 
 type LoadingScreenProps = {
-    message?: string;
+    message?: React.ReactNode | string;
 };
 
 export const LoadingScreen = ({ message }: LoadingScreenProps) => (
