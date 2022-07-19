@@ -8,7 +8,6 @@ Added:
 
 -   suite-ready
     -   labeling: 'dropbox' | 'google' | 'fileSystem' | 'sdCard' | ''
-    -   bitcoinUnit: 'BTC' | 'μBTC' | 'mBTC' | 'sat'
 -   settings/general/labeling
     -   value: boolean
 -   settings/general/labeling-provider
@@ -16,8 +15,6 @@ Added:
 -   firmware-validate-hash-error
     -   error: string
 -   firmware-validate-hash-mismatch
--   settings/general/change-bitcoin-unit
-    -   unit: 'BTC' | 'μBTC' | 'mBTC' | 'sat'
 
 ### 1.20
 
