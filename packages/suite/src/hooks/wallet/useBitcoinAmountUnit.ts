@@ -25,6 +25,9 @@ const UNIT_OPTIONS = [
 export const useBitcoinAmountUnit = () => {
     const bitcoinAmountUnit = useSelector(state => state.wallet.settings.bitcoinAmountUnit);
     const selectedAccount = useSelector(state => state.wallet.selectedAccount);
+    const unavailableCapabilities = useSelector(
+        state => state.suite.device?.unavailableCapabilities,
+    );
 
     const { toggleBitcoinAmountUnits, setBitcoinAmountUnits } = useActions({
         toggleBitcoinAmountUnits: walletSettingsActions.toggleBitcoinAmountUnits,
@@ -33,16 +36,20 @@ export const useBitcoinAmountUnit = () => {
 
     const areSatsDisplayed = bitcoinAmountUnit === PROTO.AmountUnit.SATOSHI;
 
-    const isSupportedByCurrentNetwork =
+    const areUnitsSupportedByDevice = !!unavailableCapabilities?.amountUnit;
+
+    const areUnitsSupportedByNetwork =
         selectedAccount.status === 'loaded' &&
         hasNetworkFeatures(selectedAccount.account, 'amount-unit');
+
+    const areUnitsSupported = areUnitsSupportedByDevice && areUnitsSupportedByNetwork;
 
     return {
         bitcoinAmountUnit,
         areSatsDisplayed,
         toggleBitcoinAmountUnits,
         setBitcoinAmountUnits,
-        isSupportedByCurrentNetwork,
+        areUnitsSupported,
         UNIT_LABELS,
         UNIT_OPTIONS,
     };

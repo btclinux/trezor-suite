@@ -105,8 +105,8 @@ const Amount = ({ output, outputId }: Props) => {
     } = useSendFormContext();
 
     const theme = useTheme();
-    const { areSatsDisplayed, isSupportedByCurrentNetwork } = useBitcoinAmountUnit();
-    const areSatsUsed = areSatsDisplayed && isSupportedByCurrentNetwork;
+    const { areSatsDisplayed, areUnitsSupported } = useBitcoinAmountUnit();
+    const areSatsUsed = areSatsDisplayed && areUnitsSupported;
 
     const inputName = `outputs[${outputId}].amount`;
     const tokenInputName = `outputs[${outputId}].token`;

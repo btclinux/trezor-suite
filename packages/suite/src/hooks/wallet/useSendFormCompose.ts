@@ -49,8 +49,8 @@ export const useSendFormCompose = ({
 
     const debounce = useAsyncDebounce();
 
-    const { areSatsDisplayed, isSupportedByCurrentNetwork } = useBitcoinAmountUnit();
-    const areSatsUsed = areSatsDisplayed && isSupportedByCurrentNetwork;
+    const { areSatsDisplayed, areUnitsSupported } = useBitcoinAmountUnit();
+    const areSatsUsed = areSatsDisplayed && areUnitsSupported;
 
     const networkDecimals = NETWORKS.find(network => network.symbol === account.symbol)
         ?.decimals as number;

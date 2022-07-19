@@ -62,10 +62,10 @@ export const AmountUnitSwitchWrapper = ({
     isActive,
     children,
 }: AmountUnitSwitchWrapperProps) => {
-    const { areSatsDisplayed, toggleBitcoinAmountUnits, isSupportedByCurrentNetwork } =
+    const { areSatsDisplayed, toggleBitcoinAmountUnits, areUnitsSupported } =
         useBitcoinAmountUnit();
 
-    const isEnabled = isActive || isSupportedByCurrentNetwork;
+    const isEnabled = isActive || areUnitsSupported;
 
     return (
         <Tooltip
