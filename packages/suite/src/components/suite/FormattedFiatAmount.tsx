@@ -15,8 +15,8 @@ type FormattedFiatAmountProps = {
 export const FormattedFiatAmount = ({
     value,
     currency,
-    minimumFractionDigits,
-    maximumFractionDigits,
+    minimumFractionDigits = 2,
+    maximumFractionDigits = 2,
     style,
     ...props
 }: FormattedFiatAmountProps) => {
@@ -38,8 +38,8 @@ export const FormattedFiatAmount = ({
         <FNumber
             currency={currency}
             value={bn.toNumber()}
-            minimumFractionDigits={minimumFractionDigits ?? 2}
-            maximumFractionDigits={maximumFractionDigits ?? 2}
+            minimumFractionDigits={minimumFractionDigits}
+            maximumFractionDigits={maximumFractionDigits}
             style={style || 'currency'}
             {...props}
         />

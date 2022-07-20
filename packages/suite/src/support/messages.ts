@@ -6685,7 +6685,7 @@ export default defineMessages({
     },
     TR_TO_SATOSHIS: {
         id: 'TR_TO_SATOSHIS',
-        defaultMessage: 'To sats',
+        defaultMessage: 'To sat',
     },
     TR_TO_BTC: {
         id: 'TR_TO_BTC',
