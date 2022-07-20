@@ -14,8 +14,7 @@ const Value = styled.span`
     text-overflow: ellipsis;
 `;
 
-const Symbol = styled.span<{ isLowerCase: boolean }>`
-    text-transform: ${({ isLowerCase }) => !isLowerCase && 'uppercase'};
+const Symbol = styled.span`
     word-break: initial;
 `;
 
@@ -48,19 +47,23 @@ export const FormattedCryptoAmount = ({
     const areSatsSupported = !!symbolFeatures?.includes('amount-unit');
 
     let formattedValue = value;
+    let formattedSymbol = symbol?.toUpperCase();
+
     const isSatoshis = areSatsSupported && areSatsDisplayed;
 
     if (isSatoshis) {
         formattedValue = formatCurrencyAmount(
             Number(networkAmountToSatoshi(String(value), symbol as NetworkSymbol)),
         ) as string;
+
+        formattedSymbol = symbol === 'btc' ? 'sat' : `sat ${symbol?.toUpperCase()}`;
     }
 
     if (isRawString) {
         return (
             <>
                 {`${signValue ? `${isValuePositive(signValue) ? '+' : '-'}` : ''} ${formattedValue}
-                ${isSatoshis ? 'sats' : symbol?.toUpperCase()}`}
+                ${formattedSymbol}`}
             </>
         );
     }
@@ -71,9 +74,7 @@ export const FormattedCryptoAmount = ({
 
             <Value data-test={dataTest}>{formattedValue}</Value>
 
-            {symbol && (
-                <Symbol isLowerCase={isSatoshis}>&nbsp;{isSatoshis ? 'sats' : symbol}</Symbol>
-            )}
+            {symbol && <Symbol>&nbsp;{formattedSymbol}</Symbol>}
         </span>
     );
 
