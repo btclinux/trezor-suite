@@ -1,6 +1,6 @@
 import { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useActions, useSelector } from '@suite-hooks';
+import { useActions, useDidUpdate, useSelector } from '@suite-hooks';
 import * as sendFormActions from '@wallet-actions/sendFormActions';
 import * as walletSettingsActions from '@settings-actions/walletSettingsActions';
 import * as routerActions from '@suite-actions/routerActions';
@@ -20,6 +20,8 @@ import { useSendFormCompose } from './useSendFormCompose';
 import { useSendFormImport } from './useSendFormImport';
 import { useFees } from './form/useFees';
 import { PROTOCOL_TO_NETWORK } from '@suite-constants/protocol';
+import { useBitcoinAmountUnit } from './useBitcoinAmountUnit';
+import { amountToSatoshi, formatAmount } from '@wallet-utils/accountUtils';
 
 export const SendContext = createContext<SendContextValues | null>(null);
 SendContext.displayName = 'SendContext';
@@ -97,6 +99,10 @@ export const useSendForm = (props: UseSendFormProps): SendContextValues => {
         control,
         name: 'outputs',
     });
+
+    const { areSatsDisplayed, areUnitsSupportedByNetwork, areUnitsSupportedByDevice } =
+        useBitcoinAmountUnit();
+    const areSatsUsed = areSatsDisplayed && areUnitsSupportedByNetwork && areUnitsSupportedByDevice;
 
     // enhance DEFAULT_VALUES with last remembered FeeLevel and localCurrencyOption
     // used in "loadDraft" useEffect and "importTransaction" callback
@@ -301,6 +307,21 @@ export const useSendForm = (props: UseSendFormProps): SendContextValues => {
         }
         setDraftSaveRequest(false);
     }, [draftSaveRequest, setDraftSaveRequest, saveDraft, getValues, errors]);
+
+    useDidUpdate(() => {
+        const { outputs } = getValues();
+
+        const conversionToUse = areSatsUsed ? amountToSatoshi : formatAmount;
+
+        outputs.forEach((output, index) =>
+            sendFormUtils.setAmount(
+                index,
+                conversionToUse(output.amount || '0', state.network.decimals),
+            ),
+        );
+
+        composeRequest();
+    }, [areSatsUsed]);
 
     return {
         ...state,

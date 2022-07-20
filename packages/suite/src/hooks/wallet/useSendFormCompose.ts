@@ -9,12 +9,9 @@ import {
     PrecomposedLevels,
     PrecomposedLevelsCardano,
 } from '@wallet-types/sendForm';
-import { useActions, useAsyncDebounce, useDidUpdate } from '@suite-hooks';
+import { useActions, useAsyncDebounce } from '@suite-hooks';
 import * as sendFormActions from '@wallet-actions/sendFormActions';
 import { findComposeErrors } from '@wallet-utils/sendFormUtils';
-import { useBitcoinAmountUnit } from './useBitcoinAmountUnit';
-import { amountToSatoshi, formatAmount } from '@wallet-utils/accountUtils';
-import { NETWORKS } from '@wallet-config';
 
 type Props = UseFormMethods<FormState> & {
     state: UseSendFormState;
@@ -49,33 +46,18 @@ export const useSendFormCompose = ({
 
     const debounce = useAsyncDebounce();
 
-    const { areSatsDisplayed, areUnitsSupported } = useBitcoinAmountUnit();
-    const areSatsUsed = areSatsDisplayed && areUnitsSupported;
-
-    const networkDecimals = NETWORKS.find(network => network.symbol === account.symbol)
-        ?.decimals as number;
-
     const composeDraft = useCallback(
         async (values: FormState) => {
             // start composing without debounce
             updateContext({ isLoading: true, isDirty: true });
             setComposedLevels(undefined);
 
-            if (areSatsUsed) {
-                const formattedOutputs = values.outputs.map(output => ({
-                    ...output,
-                    amount: formatAmount(output.amount, networkDecimals),
-                }));
-
-                values = { ...values, outputs: formattedOutputs };
-            }
-
             const result = await composeTransaction(values, state);
 
             setComposedLevels(result);
             updateContext({ isLoading: false, isDirty: true }); // isDirty needs to be set again, "state" is cached in updateContext callback
         },
-        [state, composeTransaction, updateContext, areSatsUsed, networkDecimals],
+        [state, composeTransaction, updateContext],
     );
 
     // called from composeRequest useEffect
@@ -86,18 +68,9 @@ export const useSendFormCompose = ({
                 return;
             }
 
-            let values = getValues();
+            const values = getValues();
             // save draft (it could be changed later, after composing)
             setDraftSaveRequest(true);
-
-            if (areSatsUsed) {
-                const formattedOutputs = values.outputs.map(output => ({
-                    ...output,
-                    amount: formatAmount(output.amount, networkDecimals),
-                }));
-
-                values = { ...values, outputs: formattedOutputs };
-            }
 
             return composeTransaction(values, state);
         };
@@ -117,16 +90,7 @@ export const useSendFormCompose = ({
             // result undefined: (FormState got errors or sendFormActions got errors)
             updateContext({ isLoading: false });
         }
-    }, [
-        state,
-        updateContext,
-        debounce,
-        errors,
-        getValues,
-        composeTransaction,
-        areSatsUsed,
-        networkDecimals,
-    ]);
+    }, [state, updateContext, debounce, errors, getValues, composeTransaction]);
 
     // Create a compose request which should be processed in useEffect below
     // This function should be called from the UI (input.onChange, button.click etc...)
@@ -202,37 +166,12 @@ export const useSendFormCompose = ({
             const { setMaxOutputId } = values;
             // set calculated and formatted "max" value to `Amount` input
             if (typeof setMaxOutputId === 'number' && composed.max) {
-                setAmount(
-                    setMaxOutputId,
-                    areSatsUsed ? amountToSatoshi(composed.max, networkDecimals) : composed.max,
-                );
+                setAmount(setMaxOutputId, composed.max);
                 setDraftSaveRequest(true);
             }
         },
-        [
-            composeField,
-            getValues,
-            setAmount,
-            errors,
-            setError,
-            clearErrors,
-            setValue,
-            areSatsUsed,
-            networkDecimals,
-        ],
+        [composeField, getValues, setAmount, errors, setError, clearErrors, setValue],
     );
-
-    useDidUpdate(() => {
-        const { outputs } = getValues();
-
-        const conversionToUse = areSatsUsed ? amountToSatoshi : formatAmount;
-
-        outputs.forEach((output, index) =>
-            setAmount(index, conversionToUse(output.amount || '0', state.network.decimals)),
-        );
-
-        composeRequest();
-    }, [areSatsUsed]);
 
     // handle composedLevels change, setValues or errors for composeField
     useEffect(() => {

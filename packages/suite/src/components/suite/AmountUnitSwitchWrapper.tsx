@@ -5,25 +5,6 @@ import { useBitcoinAmountUnit } from '@wallet-hooks/useBitcoinAmountUnit';
 import { NetworkSymbol } from '@wallet-types';
 import { Translation } from './Translation';
 
-const SatoshisTag = styled.div`
-    position: absolute;
-    left: calc(100% + 8px);
-    display: flex;
-    height: 14px;
-    color: ${({ theme }) => theme.TYPE_LIGHT_GREY};
-    font-size: ${variables.FONT_SIZE.SMALL};
-    font-weight: ${variables.FONT_WEIGHT.MEDIUM};
-    opacity: 0;
-    white-space: nowrap;
-    transition: opacity 0.1s ease-in;
-    pointer-events: none;
-
-    div {
-        margin-left: 2px;
-        padding-top: 1px;
-    }
-`;
-
 const Container = styled.div<{ isHoverable?: boolean }>`
     position: relative;
     display: flex;
@@ -42,10 +23,6 @@ const Container = styled.div<{ isHoverable?: boolean }>`
             ${variables.MEDIA_QUERY.HOVER} {
                 :hover {
                     background: ${({ theme }) => theme.BG_GREY};
-
-                    ${SatoshisTag} {
-                        opacity: 1;
-                    }
                 }
             }
         `}
@@ -62,10 +39,10 @@ export const AmountUnitSwitchWrapper = ({
     isActive,
     children,
 }: AmountUnitSwitchWrapperProps) => {
-    const { areSatsDisplayed, toggleBitcoinAmountUnits, areUnitsSupported } =
+    const { areSatsDisplayed, toggleBitcoinAmountUnits, areUnitsSupportedByNetwork } =
         useBitcoinAmountUnit();
 
-    const isEnabled = isActive || areUnitsSupported;
+    const isEnabled = isActive || areUnitsSupportedByNetwork;
 
     return (
         <Tooltip

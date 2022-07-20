@@ -8,7 +8,6 @@ import {
     amountToSatoshi,
     formatNetworkAmount,
     hasNetworkFeatures,
-    formatAmount,
 } from '@wallet-utils/accountUtils';
 import { getInputState, findToken } from '@wallet-utils/sendFormUtils';
 import { isDecimalsValid, isInteger } from '@wallet-utils/validation';
@@ -105,8 +104,9 @@ const Amount = ({ output, outputId }: Props) => {
     } = useSendFormContext();
 
     const theme = useTheme();
-    const { areSatsDisplayed, areUnitsSupported } = useBitcoinAmountUnit();
-    const areSatsUsed = areSatsDisplayed && areUnitsSupported;
+    const { areSatsDisplayed, areUnitsSupportedByNetwork, areUnitsSupportedByDevice } =
+        useBitcoinAmountUnit();
+    const areSatsUsed = areSatsDisplayed && areUnitsSupportedByNetwork && areUnitsSupportedByDevice;
 
     const inputName = `outputs[${outputId}].amount`;
     const tokenInputName = `outputs[${outputId}].token`;
@@ -122,13 +122,6 @@ const Amount = ({ output, outputId }: Props) => {
     const tokenValue = getDefaultValue(tokenInputName, output.token);
     const token = findToken(tokens, tokenValue);
 
-    const formattedAvailableBalance = token
-        ? token.balance || '0'
-        : formatNetworkAmount(availableBalance, symbol);
-    const reserve =
-        account.networkType === 'ripple'
-            ? formatNetworkAmount(account.misc.reserve, symbol)
-            : undefined;
     const tokenBalance = token ? (
         <TokenBalanceValue>{`${token.balance} ${token.symbol!.toUpperCase()}`}</TokenBalanceValue>
     ) : undefined;
@@ -151,28 +144,14 @@ const Amount = ({ output, outputId }: Props) => {
                 setValue('setMaxOutputId', undefined);
             }
 
-            let eventValue = event.target.value;
-
-            if (areSatsUsed) {
-                eventValue = formatAmount(eventValue, decimals);
-            }
+            const eventValue = event.target.value;
 
             // calculate or reset Fiat value
             calculateFiat(outputId, !error ? eventValue : undefined);
 
             composeTransaction(inputName);
         },
-        [
-            setValue,
-            calculateFiat,
-            composeTransaction,
-            areSatsUsed,
-            error,
-            inputName,
-            isSetMaxActive,
-            outputId,
-            decimals,
-        ],
+        [setValue, calculateFiat, composeTransaction, error, inputName, isSetMaxActive, outputId],
     );
 
     const cryptoAmountRef = register({
@@ -197,10 +176,6 @@ const Amount = ({ output, outputId }: Props) => {
                 );
             }
 
-            if (areSatsUsed) {
-                value = formatAmount(value, decimals);
-            }
-
             const amountBig = new BigNumber(value);
 
             if (amountBig.lt(0)) {
@@ -212,9 +187,11 @@ const Amount = ({ output, outputId }: Props) => {
                 return 'AMOUNT_IS_TOO_LOW';
             }
 
+            const rawDust = feeInfo?.dustLimit?.toString();
+
             // amounts below dust are not allowed
             let dust =
-                feeInfo.dustLimit && formatNetworkAmount(feeInfo.dustLimit.toString(), symbol);
+                rawDust && (areSatsDisplayed ? rawDust : formatNetworkAmount(rawDust, symbol));
 
             if (dust && amountBig.lte(dust)) {
                 if (areSatsUsed) {
@@ -230,7 +207,22 @@ const Amount = ({ output, outputId }: Props) => {
                 );
             }
 
+            let formattedAvailableBalance: string;
+
+            if (token) {
+                formattedAvailableBalance = token.balance || '0';
+            } else {
+                formattedAvailableBalance = areSatsDisplayed
+                    ? availableBalance
+                    : formatNetworkAmount(availableBalance, symbol);
+            }
+
             if (amountBig.gt(formattedAvailableBalance)) {
+                const reserve =
+                    account.networkType === 'ripple'
+                        ? formatNetworkAmount(account.misc.reserve, symbol)
+                        : undefined;
+
                 if (reserve && amountBig.lt(formatNetworkAmount(balance, symbol))) {
                     return (
                         <Translation

@@ -36,20 +36,19 @@ export const useBitcoinAmountUnit = () => {
 
     const areSatsDisplayed = bitcoinAmountUnit === PROTO.AmountUnit.SATOSHI;
 
-    const areUnitsSupportedByDevice = !!unavailableCapabilities?.amountUnit;
+    const areUnitsSupportedByDevice = !unavailableCapabilities?.amountUnit;
 
     const areUnitsSupportedByNetwork =
         selectedAccount.status === 'loaded' &&
         hasNetworkFeatures(selectedAccount.account, 'amount-unit');
-
-    const areUnitsSupported = areUnitsSupportedByDevice && areUnitsSupportedByNetwork;
 
     return {
         bitcoinAmountUnit,
         areSatsDisplayed,
         toggleBitcoinAmountUnits,
         setBitcoinAmountUnits,
-        areUnitsSupported,
+        areUnitsSupportedByDevice,
+        areUnitsSupportedByNetwork,
         UNIT_LABELS,
         UNIT_OPTIONS,
     };

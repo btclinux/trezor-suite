@@ -1,4 +1,4 @@
-import TrezorConnect, { FeeLevel, Params, SignTransaction } from '@trezor/connect';
+import TrezorConnect, { FeeLevel, Params, PROTO, SignTransaction } from '@trezor/connect';
 import BigNumber from 'bignumber.js';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { formatNetworkAmount, hasNetworkFeatures } from '@wallet-utils/accountUtils';
@@ -14,11 +14,22 @@ import {
 import { Dispatch, GetState } from '@suite-types';
 
 export const composeTransaction =
-    (formValues: FormState, formState: UseSendFormState) => async (dispatch: Dispatch) => {
+    (formValues: FormState, formState: UseSendFormState) =>
+    async (dispatch: Dispatch, getState: GetState) => {
         const { account, feeInfo } = formState;
+
+        const {
+            settings: { bitcoinAmountUnit },
+        } = getState().wallet;
+        const { device } = getState().suite;
+
+        const isSatoshis =
+            bitcoinAmountUnit === PROTO.AmountUnit.SATOSHI &&
+            !device?.unavailableCapabilities?.amountUnit;
+
         if (!account.addresses || !account.utxo) return;
 
-        const composeOutputs = getBitcoinComposeOutputs(formValues, account.symbol);
+        const composeOutputs = getBitcoinComposeOutputs(formValues, account.symbol, isSatoshis);
         if (composeOutputs.length < 1) return;
 
         // clone FeeLevels in rbf, the will be modified later
@@ -145,7 +156,7 @@ export const composeTransaction =
                         .toString();
                 }
                 if (typeof tx.max === 'string') {
-                    tx.max = formatNetworkAmount(tx.max, account.symbol);
+                    tx.max = isSatoshis ? tx.max : formatNetworkAmount(tx.max, account.symbol);
                 }
             } else if (tx.error === 'NOT-ENOUGH-FUNDS') {
                 tx.errorMessage = { id: 'AMOUNT_IS_NOT_ENOUGH' };
