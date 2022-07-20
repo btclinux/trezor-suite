@@ -107,3 +107,18 @@ export const enableCoinJoin = [
         },
     },
 ];
+
+export const signCoinjoinTx = [
+    {
+        description: 'success',
+        connect: {
+            success: true,
+        },
+        params: {
+            network: 'test',
+        },
+        result: {
+            actions: 1, // enabled
+        },
+    },
+];

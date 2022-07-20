@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import { useSelector } from '@suite-hooks';
 import { CoinJoinStatus } from './CoinJoinStatus';
 import { CoinJoinSetup } from './CoinJoinSetup';
+import { CoinjoinHistory } from './CoinjoinHistory';
 import type { Account } from '@wallet-types';
 
 const Wrapper = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     margin-bottom: 24px;
 `;
@@ -17,13 +18,20 @@ interface Props {
 }
 
 export const CoinJoinSummary = ({ account }: Props) => {
-    const isEnabled = useSelector(state =>
-        state.wallet.coinjoin.accounts.find(key => key === account.key),
+    const coinjoin = useSelector(state => state.wallet.coinjoin);
+    const registration = coinjoin.registrations.find(
+        a => a.accountKey === account.key && !a.completed,
     );
+    const previousRegistrations = coinjoin.registrations.filter(a => a.accountKey === account.key);
 
     return (
         <Wrapper>
-            {isEnabled ? <CoinJoinStatus account={account} /> : <CoinJoinSetup account={account} />}
+            {registration ? (
+                <CoinJoinStatus account={account} registration={registration} />
+            ) : (
+                <CoinJoinSetup account={account} />
+            )}
+            <CoinjoinHistory history={previousRegistrations} log={coinjoin.log} />
         </Wrapper>
     );
 };

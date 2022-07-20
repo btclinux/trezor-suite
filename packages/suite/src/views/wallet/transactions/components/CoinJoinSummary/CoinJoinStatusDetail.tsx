@@ -14,7 +14,6 @@ const Cell = styled(Card)`
     flex: 1;
     background: ${props => props.theme.BG_LIGHT_GREY};
     color: ${props => props.theme.TYPE_WHITE};
-    margin-right: 10px;
 `;
 
 const Row = styled.div`
@@ -35,7 +34,7 @@ interface Props {
     anonLevel: number;
     rounds: number;
     fee: number;
-    coordinatorFee: string;
+    coordinatorFee: number;
 }
 
 export const CoinJoinStatusDetail = ({
@@ -56,11 +55,11 @@ export const CoinJoinStatusDetail = ({
             Max rounds: <span>{rounds}</span>
         </Row>
         <Row>
-            Max mining fee: <span>{fee} sat/vbyte</span>
+            Max mining fee: <span>{fee / 1000} sat/vbyte</span>
         </Row>
         <Divider />
         <Row>
-            Coordinator fee per round: <span>{coordinatorFee}</span>
+            Coordinator fee: <span>{coordinatorFee / 100000000} %</span>
         </Row>
     </Wrapper>
 );

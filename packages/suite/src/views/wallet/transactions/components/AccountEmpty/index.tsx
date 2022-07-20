@@ -86,7 +86,7 @@ const AccountEmpty = ({ account }: Props) => {
                     }}
                 />
             )}
-            {account.accountType === 'taproot' && !taprootBannerClosed && (
+            {bip43 === 'bip86' && !taprootBannerClosed && (
                 <TaprootBanner
                     onClose={() => {
                         setFlag('taprootBannerClosed', true);
