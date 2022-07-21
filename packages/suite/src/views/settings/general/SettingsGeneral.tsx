@@ -21,17 +21,18 @@ import { VersionWithUpdate } from './VersionWithUpdate';
 import { EarlyAccess } from './EarlyAccess';
 import { getIsTorEnabled } from '@suite-utils/tor';
 import { BitcoinAmountUnit } from './BitcoinAmountUnit';
-import { hasNetworkFeatures } from '@wallet-utils/accountUtils';
+import { NETWORKS } from '@wallet-config';
 
 export const SettingsGeneral = () => {
-    const { desktopUpdate, isTorEnabled, accounts } = useSelector(state => ({
+    const { desktopUpdate, isTorEnabled, enabledNetworks } = useSelector(state => ({
         desktopUpdate: state.desktopUpdate,
         isTorEnabled: getIsTorEnabled(state.suite.torStatus),
-        accounts: state.wallet.accounts,
+        enabledNetworks: state.wallet.settings.enabledNetworks,
     }));
 
-    const hasBitcoinNetworks = !!accounts?.find(account =>
-        hasNetworkFeatures(account, 'amount-unit'),
+    const hasBitcoinNetworks = NETWORKS.some(
+        ({ symbol, features }) =>
+            enabledNetworks.includes(symbol) && features?.includes('amount-unit'),
     );
 
     return (
