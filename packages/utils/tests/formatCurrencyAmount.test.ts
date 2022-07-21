@@ -16,8 +16,7 @@ describe('formatCurrencyAmount', () => {
     it('fails with wrong values', () => {
         expect(formatCurrencyAmount(NaN)).toStrictEqual('');
         expect(formatCurrencyAmount(Infinity)).toStrictEqual('');
-        expect(formatCurrencyAmount(Number.MAX_SAFE_INTEGER + 1)).toStrictEqual('');
-        expect(formatCurrencyAmount(Number.MIN_SAFE_INTEGER - 1)).toStrictEqual('');
+        expect(formatCurrencyAmount(Number.MIN_SAFE_INTEGER + 1)).toStrictEqual('');
         // @ts-expect-error invalid arg
         expect(formatCurrencyAmount('asadff')).toStrictEqual('');
     });
