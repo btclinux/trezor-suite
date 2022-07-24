@@ -9,6 +9,7 @@ import feesReducer from '@wallet-reducers/feesReducer';
 import notificationsReducer from '@suite-reducers/notificationReducer';
 import * as blockchainActions from '../blockchainActions';
 import * as fixtures from '../__fixtures__/blockchainActions';
+import { PROTO } from 'packages/connect/lib';
 
 jest.mock('@trezor/connect', () => global.JestMocks.getTrezorConnect({}));
 const TrezorConnect = require('@trezor/connect').default;
@@ -45,6 +46,9 @@ export const getInitialState = (
         fees: {
             ...feesReducer(undefined, action),
             ...fees,
+        },
+        settings: {
+            bitcoinAmountUnit: PROTO.AmountUnit.BITCOIN,
         },
     },
     notifications: notificationsReducer([], action),
