@@ -39,7 +39,7 @@ const coinjoinReducer = (
 ): CoinJoinState =>
     produce(state, draft => {
         switch (action.type) {
-            case COINJOIN.CLIENT_LOG:
+            case COINJOIN.CLIENT_LOG: {
                 const now = new Date();
                 draft.log.unshift({
                     time: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
@@ -49,6 +49,7 @@ const coinjoinReducer = (
                     draft.log = draft.log.slice(0, 200);
                 }
                 break;
+            }
 
             case COINJOIN.CLIENT_ENABLE:
                 draft.instances.push({
