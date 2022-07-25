@@ -553,6 +553,7 @@ const signCoinjoinTx =
         await params.reduce(
             (p, { device, tx, paymentRequest, roundId, key }) =>
                 p.then(async () => {
+                    console.warn('SIGN PARAMS', tx);
                     // @ts-expect-error TODO: tx.inputs/outputs path is a string
                     const signTx = await TrezorConnect.signTransaction({
                         device,
@@ -564,11 +565,21 @@ const signCoinjoinTx =
                     });
                     const { utxos } = request.accounts[key];
                     if (signTx.success) {
-                        request.accounts[key].utxos = utxos.map((utxo, index) => ({
-                            ...utxo,
-                            witness: signTx.payload.witnesses![index],
-                            witnessIndex: index,
-                        }));
+                        console.warn('WITTNESSES!', signTx.payload.witnesses);
+                        let utxoIndex = 0;
+                        tx.inputs.forEach((input, index) => {
+                            if (input.script_type !== 'EXTERNAL') {
+                                request.accounts[key].utxos[utxoIndex].witness =
+                                    signTx.payload.witnesses![index];
+                                request.accounts[key].utxos[utxoIndex].witnessIndex = index;
+                                utxoIndex++;
+                            }
+                        });
+                        // request.accounts[key].utxos = utxos.map((utxo, index) => ({
+                        //     ...utxo,
+                        //     witness: signTx.payload.witnesses![index],
+                        //     witnessIndex: index,
+                        // }));
 
                         dispatch({
                             type: COINJOIN.ROUND_TX_SIGNED,
