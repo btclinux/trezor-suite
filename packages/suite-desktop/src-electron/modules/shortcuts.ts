@@ -1,5 +1,8 @@
 import electronLocalshortcut from 'electron-localshortcut';
 
+import { restartApp } from '@desktop-electron/libs/app-utils';
+import { isDev } from '@suite-utils/build';
+
 import type { Module } from './index';
 
 const init: Module = ({ mainWindow }) => {
@@ -33,6 +36,17 @@ const init: Module = ({ mainWindow }) => {
             mainWindow.webContents.reload();
         });
     });
+
+    // only for built app because restarting app breaks development process
+    if (!isDev) {
+        const restartAppShortcuts = ['Option+F5', 'Alt+F5', 'Option+Shift+R', 'Alt+Shift+R'];
+        restartAppShortcuts.forEach(shortcut => {
+            electronLocalshortcut.register(mainWindow, shortcut, () => {
+                logger.info('shortcuts', `${shortcut} pressed to restart app`);
+                restartApp();
+            });
+        });
+    }
 };
 
 export default init;
