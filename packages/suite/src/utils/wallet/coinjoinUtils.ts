@@ -42,4 +42,5 @@ export const sanitizeAccount = (account: Account, params: CoinjoinParameters): C
     addresses: account.addresses!.change,
 });
 
-export const getCoinjoinUrl = () => 'http://localhost:8081/'; // return 'https://coinjoin.corp.sldev.cz/';
+// export const getCoinjoinUrl = () => 'http://localhost:8081/';
+export const getCoinjoinUrl = () => 'https://coinjoin.corp.sldev.cz/';
