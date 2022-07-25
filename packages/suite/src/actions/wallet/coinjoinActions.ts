@@ -157,7 +157,7 @@ export const createCoinJoinAccount =
         }
 
         // Temporary simulate account discovery by block filters
-        let i = 100;
+        let i = 0;
         const tick = () => {
             i += 10;
             if (i < 100) {
@@ -230,9 +230,10 @@ const onCoinjoinClientEvent =
             const { registrations } = getState().wallet.coinjoin;
             const accountsInRound = Object.keys(round.accounts);
 
-            const registrationsToUpdate = accountsInRound.flatMap(accountKey => {
-                return registrations.find(r => r.accountKey === accountKey && !r.completed) || [];
-            });
+            const registrationsToUpdate = accountsInRound.flatMap(
+                accountKey =>
+                    registrations.find(r => r.accountKey === accountKey && !r.completed) || [],
+            );
 
             // const client = coinjoinClients.find(c => c.settings.network === network);
             registrationsToUpdate.forEach(reg => {
@@ -257,14 +258,12 @@ const onCoinjoinClientEvent =
                                     type: 'coinjoin-complete',
                                 }),
                             );
-                        } else {
-                            if (round.coinjoinState.isFullySigned) {
-                                dispatch(
-                                    addToast({
-                                        type: 'coinjoin-round-complete',
-                                    }),
-                                );
-                            }
+                        } else if (round.coinjoinState.isFullySigned) {
+                            dispatch(
+                                addToast({
+                                    type: 'coinjoin-round-complete',
+                                }),
+                            );
                         }
                     }
                 }
