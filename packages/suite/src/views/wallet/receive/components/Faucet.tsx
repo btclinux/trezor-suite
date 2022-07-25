@@ -62,6 +62,7 @@ export const Faucet = () => {
     const [address, setAddress] = useState<Option | null>(null);
 
     if (!selectedAccount.account || !selectedAccount.account.addresses) return null;
+    if (selectedAccount.account.accountType !== 'coinjoin') return null;
 
     const options = selectedAccount.account.addresses.unused.map(buildAddressOption);
     const selected = address || options[0];
