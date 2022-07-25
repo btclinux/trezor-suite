@@ -40,3 +40,21 @@ export const encodeDataToQueryString = <T extends Event>(
 
     return params.toString();
 };
+
+export const reportEventWithRetry = async (
+    type: Event['type'],
+    url: string,
+    options: RequestInit,
+    retry = true,
+) => {
+    try {
+        await fetch(url, options);
+    } catch (err) {
+        if (!retry) {
+            console.error(`Analytics report failed. Reporting '${type}' was unsuccessful. ${err}`);
+            return;
+        }
+        console.error(`Analytics report failed. Reporting '${type}' again. ${err}`);
+        reportEventWithRetry(type, url, options, false);
+    }
+};

@@ -1,4 +1,5 @@
-import { encodeDataToQueryString, getRandomId, getUrl } from './utils';
+import { encodeDataToQueryString, getRandomId, getUrl, reportEventWithRetry } from './utils';
+
 import type { InitOptions, Event, App } from './types';
 
 export class Analytics<T extends Event> {
@@ -61,12 +62,11 @@ export class Analytics<T extends Event> {
             data,
         );
 
-        try {
-            fetch(`${this.url}?${qs}`, {
-                method: 'GET',
-            });
-        } catch (err) {
-            console.error('Failed to log analytics', err);
-        }
+        // try to report analytics event once again if the previous one fails
+        // easy solution which should solve missing events on the launch of the app
+        // if it does not help, then queue or more sophisticated solution should be implemented
+        reportEventWithRetry(data.type, `${this.url}?${qs}`, {
+            method: 'GET',
+        });
     };
 }
