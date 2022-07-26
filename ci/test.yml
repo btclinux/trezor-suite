@@ -63,6 +63,7 @@
             "@group:metadata",
             "@group:passphrase",
             "@group:fragile",
+            "@group:browser",
           ]
         CONTAINERS: "trezor-user-env-unix"
       - TEST_GROUP: "@group:wallet"
