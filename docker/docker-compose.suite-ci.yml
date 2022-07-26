@@ -27,7 +27,7 @@ services:
       - TEST_URLS=$TEST_URLS
     network_mode: service:trezor-user-env-unix
     working_dir: /trezor-suite
-    command: bash -c "node ./packages/integration-tests/projects/suite-web/run_tests.js --project /trezor-suite/packages/integration-tests/projects/suite-web --group=$TEST_GROUP"
+    command: bash -c "node ./packages/integration-tests/wait-for-env.js && node ./packages/integration-tests/projects/suite-web/run_tests.js --project /trezor-suite/packages/integration-tests/projects/suite-web --group=$TEST_GROUP"
     volumes:
       - ../:/trezor-suite
   bitcoin-regtest:
