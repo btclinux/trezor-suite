@@ -63,8 +63,10 @@ const runTests = async () => {
         // CI_RUNNER_ID,
         CI_RUNNER_DESCRIPTION,
         CYPRESS_updateSnapshots,
+        TEST_URLS,
     } = process.env;
 
+    const testUrls = TEST_URLS.split(' ');
     const { group } = argv;
 
     if (!TRACK_SUITE_URL || CYPRESS_updateSnapshots) {
@@ -97,23 +99,6 @@ const runTests = async () => {
     };
 
     for (let i = 0; i < finalTestFiles.length; i++) {
-        const testFile = finalTestFiles[i];
-        const retries = Number(grepForValue('@retry', testFile));
-        const allowedRuns = !Number.isNaN(retries) && Number(ALLOW_RETRY) ? retries + 1 : 1;
-
-        const spec = path.join(__dirname, testFile.substr(testFile.lastIndexOf('/tests')));
-        const testFileName = testFile
-            .substr(testFile.lastIndexOf('/tests/') + 7)
-            .replace('.test.ts', '');
-
-        let testRunNumber = 0;
-
-        const userAgent = grepForValue('@user-agent', testFile);
-
-        console.log('');
-        console.log(`[run_tests.js] testing next file ${testFile}`);
-        console.log(`[run_tests.js] allowed to run ${allowedRuns} times`);
-
         const config = {
             baseUrl: CYPRESS_baseUrl, // eslint-disable-line @typescript-eslint/naming-convention
             supportFile: `${__dirname}/support/index.ts`,
@@ -128,78 +113,103 @@ const runTests = async () => {
             trashAssetsBeforeRuns: false,
             defaultCommandTimeout: 15000,
             env: {
-                emuVersionT1: '1-master',
-                emuVersionT2: '2-master',
+                KEEP_DB: testUrls.length > 1,
             },
         };
+
+        const testFile = finalTestFiles[i];
+        const retries = Number(grepForValue('@retry', testFile));
+        const allowedRuns = !Number.isNaN(retries) && Number(ALLOW_RETRY) ? retries + 1 : 1;
+
+        const spec = path.join(__dirname, testFile.substr(testFile.lastIndexOf('/tests')));
+        const testFileName = testFile
+            .substr(testFile.lastIndexOf('/tests/') + 7)
+            .replace('.test.ts', '');
+
+        const userAgent = grepForValue('@user-agent', testFile);
 
         if (userAgent) {
             console.log('[run_tests.js] using custom user agent', userAgent);
             Object.assign(config, { userAgent });
         }
 
-        while (testRunNumber < allowedRuns) {
-            testRunNumber++;
-            try {
-                // eslint-disable-next-line no-await-in-loop
-                const runResult = await cypress.run({
-                    browser: BROWSER,
-                    // headless,
-                    headed: true,
-                    spec,
-                    config,
-                    configFile: false,
-                });
+        console.log('');
+        console.log(`[run_tests.js] testing next file ${testFile}`);
+        console.log(`[run_tests.js] allowed to run ${allowedRuns} times`);
 
-                // test failed to run. this is some kind of setup problem
-                if (runResult.status === 'failed') {
-                    throw new Error(runResult.message);
-                }
+        for (let j = 0; j < testUrls.length; j++) {
+            let testRunNumber = 0;
 
-                const { totalFailed, totalPending, totalDuration } = runResult;
+            while (testRunNumber < allowedRuns) {
+                testRunNumber++;
 
-                const { tests } = runResult.runs[0];
+                // Run all TEST_URLS
+                config.baseUrl = testUrls[j];
 
-                console.log(`[run_tests.js] ${testFileName} duration: ${totalDuration}`);
-                log.duration += totalDuration;
+                console.log(`[run_tests.js] test url: ${config.baseUrl}`);
 
-                if (totalFailed > 0) {
-                    // record failed tests if it is last run
-                    if (testRunNumber === allowedRuns) {
-                        failedTests += totalFailed;
-                        log.records[testFileName] = 'failed';
-                        log.tests.push(...tests);
+                try {
+                    // eslint-disable-next-line no-await-in-loop
+                    const runResult = await cypress.run({
+                        browser: BROWSER,
+                        // headless,
+                        headed: true,
+                        spec,
+                        config,
+                        configFile: false,
+                    });
+
+                    // rename video so that it is not overwritten by another run (in case of migration tests)
+                    if (testUrls.length > 1) {
+                        const videoPath = runResult.runs[0].video;
+                        fs.renameSync(videoPath, videoPath.replace('.mp4', `-migration-${j}.mp4`));
+                    }
+
+                    const { totalFailed, totalPending, totalDuration } = runResult;
+
+                    const { tests } = runResult.runs[0];
+
+                    console.log(`[run_tests.js] ${testFileName} duration: ${totalDuration}`);
+                    log.duration += totalDuration;
+
+                    if (totalFailed > 0) {
+                        // record failed tests if it is last run
+                        if (testRunNumber === allowedRuns) {
+                            failedTests += totalFailed;
+                            log.records[testFileName] = 'failed';
+                            log.tests.push(...tests);
+                            console.log(
+                                `[run_tests.js] test ${testFileName} finished failing after ${allowedRuns} run(s)`,
+                            );
+                            break;
+                        }
+                        // or continue
                         console.log(
-                            `[run_tests.js] test ${testFileName} finished failing after ${allowedRuns} run(s)`,
+                            `[run_tests.js] failed in run number ${testRunNumber} of ${allowedRuns}`,
                         );
+                        continue;
+                    }
+
+                    log.tests.push(...tests);
+
+                    if (totalPending > 0) {
+                        // log either success or retried (success after retry)
+                        log.records[testFileName] = 'skipped';
+                        console.log(`[run_tests.js] test ${testFileName} finished as skipped`);
                         break;
                     }
-                    // or continue
-                    console.log(
-                        `[run_tests.js] failed in run number ${testRunNumber} of ${allowedRuns}`,
-                    );
-                    continue;
-                }
 
-                log.tests.push(...tests);
-
-                if (totalPending > 0) {
                     // log either success or retried (success after retry)
-                    log.records[testFileName] = 'skipped';
-                    console.log(`[run_tests.js] test ${testFileName} finished as skipped`);
+                    log.records[testFileName] = testRunNumber === 1 ? 'success' : 'retried';
+                    console.log(
+                        `[run_tests.js] test ${testFileName} finished as successful after ${testRunNumber} run(s) (of ${allowedRuns})`,
+                    );
                     break;
+                } catch (err) {
+                    console.log('[run_tests.js] error');
+                    console.log(err);
+                    process.exit(1);
                 }
-
-                // log either success or retried (success after retry)
-                log.records[testFileName] = testRunNumber === 1 ? 'success' : 'retried';
-                console.log(
-                    `[run_tests.js] test ${testFileName} finished as successful after ${testRunNumber} run(s) (of ${allowedRuns})`,
-                );
-                break;
-            } catch (err) {
-                console.log('[run_tests.js] error');
-                console.log(err);
-                process.exit(1);
             }
         }
     }

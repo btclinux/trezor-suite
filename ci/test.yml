@@ -24,6 +24,7 @@
     ## when debugging or developing tests it does not make sense to have retries,
     ## in other cases retries are useful to avoid occasional failures due to flaky tests
     ALLOW_RETRY: 1
+    TEST_URLS: ${DEV_SERVER_URL}/suite-web/${CI_BUILD_REF_NAME}
   before_script:
     - docker login $CI_DEPENDENCY_PROXY_SERVER -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD
   script:
@@ -68,6 +69,16 @@
         CONTAINERS: "trezor-user-env-unix"
       - TEST_GROUP: "@group:wallet"
         CONTAINERS: "trezor-user-env-unix bitcoin-regtest"
+
+suite web migrations:
+  extends: .e2e web
+  variables:
+    # Each test file will be run for all urls in TEST_URLS array. Useful for migration tests
+    TEST_URLS: ${DEV_SERVER_URL}/suite-web/v22.5.3/ ${DEV_SERVER_URL}/suite-web/${CI_BUILD_REF_NAME}
+  parallel:
+    matrix:
+      - TEST_GROUP: "@group:migrations"
+        CONTAINERS: "trezor-user-env-unix"
 
 suite web:
   extends: .suite web base
