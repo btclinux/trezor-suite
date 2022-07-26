@@ -247,10 +247,10 @@ module.exports = on => {
             return null;
         },
         resetCRI: async () => {
-            if (client) {
-                await client.close();
-                client = null;
-            }
+            // if (client) {
+            //     await client.close();
+            //     client = null;
+            // }
 
             return Promise.resolve(true);
         },
