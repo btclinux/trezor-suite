@@ -56,23 +56,45 @@ const load = async ({ mainWindow, store, interceptor }: Dependencies) => {
 
         if (shouldEnableTor === true) {
             setProxy(`socks5://${host}:${port}`);
-            mainWindow.webContents.send('tor/bootstrap', {
-                type: 'progress',
-                process: {
-                    current: 0,
-                    total: 1,
+            tor.torController.on(
+                'bootstrap/event',
+                (bootstrapEvent: { progress: string; summary: string }) => {
+                    if (bootstrapEvent && bootstrapEvent.summary && bootstrapEvent.progress) {
+                        logger.info(
+                            'tor',
+                            `Bootstrap - ${bootstrapEvent.progress || ''}% - ${
+                                bootstrapEvent.summary || ''
+                            }`,
+                        );
+
+                        mainWindow.webContents.send('tor/bootstrap', {
+                            type: 'progress',
+                            summary: bootstrapEvent.summary,
+                            progress: {
+                                current: Number(bootstrapEvent.progress),
+                                total: 100,
+                            },
+                        });
+                    }
                 },
-            });
-            await tor.start();
-            mainWindow.webContents.send('tor/bootstrap', {
-                type: 'progress',
-                process: {
-                    current: 1,
-                    total: 1,
-                },
-            });
+            );
+            try {
+                await tor.start();
+                tor.torController.removeAllListeners();
+            } catch (error) {
+                mainWindow.webContents.send('tor/bootstrap', {
+                    type: 'error',
+                    message: error.message,
+                });
+                // When there is error does not mean that the process is stop,
+                // so we make sure to stop it so we are able to restart it.
+                tor.stop();
+                tor.torController.removeAllListeners();
+                throw error;
+            }
         } else {
             setProxy('');
+            tor.torController.stopWhileLoading();
             await tor.stop();
         }
 

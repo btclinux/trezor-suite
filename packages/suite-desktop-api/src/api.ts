@@ -8,6 +8,7 @@ import {
     UpdateProgress,
     InvokeResult,
     BootstrapTorEvent,
+    LoadModulesInvokeResult,
 } from './messages';
 
 // Event messages from renderer to main process
@@ -59,7 +60,9 @@ export interface RendererChannels {
 // Handled by ipcMain.handle (see packages/suite-desktop/src-electron/modules/*)
 export interface InvokeChannels {
     'handshake/client': () => void;
-    'handshake/load-modules': (payload: HandshakeClient) => InvokeResult<HandshakeElectron>;
+    'handshake/load-modules': (
+        payload: HandshakeClient,
+    ) => LoadModulesInvokeResult<HandshakeElectron>;
     'metadata/read': (options: { file: string }) => InvokeResult<string>;
     'metadata/write': (options: { file: string; content: string }) => InvokeResult;
     'server/request-address': (route: string) => string | undefined;

@@ -5,7 +5,7 @@ export type SuiteThemeVariant = 'light' | 'dark' | 'system';
 export type BootstrapTorEvent =
     | {
           type: 'progress';
-          message?: string;
+          summary: string;
           progress: {
               current: number;
               total: number;
@@ -49,6 +49,7 @@ export type HandshakeElectron = {
     urls: {
         httpReceiver: string;
     };
+    failedModules: string[];
 };
 
 export interface UpdateInfo {
@@ -72,3 +73,10 @@ export type UpdateProgress = Partial<{
 export type InvokeResult<Payload = undefined> = ExtractUndefined<Payload> extends undefined
     ? { success: true; payload?: Payload } | { success: false; error: string; code?: string }
     : { success: true; payload: Payload } | { success: false; error: string; code?: string };
+
+export type LoadModulesInvokeResult<Payload> =
+    | {
+          success: true;
+          payload?: Payload;
+      }
+    | { success: false; error: string; code?: string; payload?: Payload };

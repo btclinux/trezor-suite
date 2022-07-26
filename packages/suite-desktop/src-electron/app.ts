@@ -159,7 +159,7 @@ const init = async () => {
     const loadModulesResponse = (clientData: HandshakeClient) =>
         loadModules(clientData)
             .then(payload => ({
-                success: true as const,
+                success: payload.progress.loaded === payload.progress.total,
                 payload,
             }))
             .catch(err => ({

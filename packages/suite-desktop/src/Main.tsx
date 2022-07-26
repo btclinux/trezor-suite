@@ -78,10 +78,20 @@ export const init = async (root: HTMLElement) => {
 
     // start loading desktop modules, handle progress in <ModulesLoadingScreen />
     const loadModules = await desktopApi.loadModules(null);
+
     if (!loadModules.success) {
-        // loading failed, render error with theme provider without redux and do not continue
-        render(<ErrorScreen error={loadModules.error} />, root);
-        return;
+        const { failedModules } = loadModules && loadModules.payload;
+        // We only allow `tor` module to fail, and we allow user to control it.
+        if (failedModules.length === 1 && failedModules[0] === 'tor') {
+            await new Promise(resolve => {
+                render(<ModulesLoadingScreen callback={resolve} />, root);
+            });
+        } else {
+            // When fails a module that is expected to never fail.
+            // Loading failed, render error with theme provider without redux and do not continue.
+            render(<ErrorScreen error={loadModules.error} />, root);
+            return;
+        }
     }
 
     store.dispatch(desktopHandshake(loadModules.payload));

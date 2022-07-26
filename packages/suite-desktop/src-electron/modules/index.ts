@@ -72,6 +72,7 @@ export const initModules = async (dependencies: Dependencies) => {
     const modulesToLoad = modules.filter(isNotUndefined);
     return (handshake: HandshakeClient) => {
         let loaded = 0;
+        const failedModules: string[] = [];
         return Promise.all(
             modulesToLoad.map(async ([module, loadModule]) => {
                 logger.debug('modules', `Loading ${module}`);
@@ -89,11 +90,12 @@ export const initModules = async (dependencies: Dependencies) => {
                     return [module, payload] as const;
                 } catch (err) {
                     logger.error('modules', `Couldn't load ${module} (${err.toString()})`);
+                    failedModules.push(module);
                     dependencies.mainWindow.webContents.send('handshake/event', {
                         type: 'error',
                         message: `${module} error`,
                     });
-                    throw err;
+                    return [module] as const;
                 }
             }),
         )
@@ -109,6 +111,11 @@ export const initModules = async (dependencies: Dependencies) => {
                     desktopUpdate,
                     paths: { userDir, binDir: path.join(global.resourcesPath, 'bin') },
                     urls: { httpReceiver },
+                    progress: {
+                        loaded,
+                        total: modulesToLoad.length,
+                    },
+                    failedModules,
                 }),
             );
     };
