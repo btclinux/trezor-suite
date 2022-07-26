@@ -112,9 +112,6 @@ const runTests = async () => {
             chromeWebSecurity: false,
             trashAssetsBeforeRuns: false,
             defaultCommandTimeout: 15000,
-            env: {
-                KEEP_DB: testUrls.length > 1,
-            },
         };
 
         const testFile = finalTestFiles[i];
@@ -139,6 +136,11 @@ const runTests = async () => {
 
         for (let j = 0; j < testUrls.length; j++) {
             let testRunNumber = 0;
+
+            // not running for the first time. It means we are testing migration on another url;
+            config.env = {
+                KEEP_DB: j > 0,
+            };
 
             while (testRunNumber < allowedRuns) {
                 testRunNumber++;
