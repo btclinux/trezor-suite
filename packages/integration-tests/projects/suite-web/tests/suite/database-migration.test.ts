@@ -1,13 +1,15 @@
 // @group:migrations
 // @retry=0
 
+const keepDB = Cypress.env('KEEP_DB');
+
 describe('Database migration', () => {
     beforeEach(() => {
         cy.viewport(1080, 1440);
         cy.task('startEmu', { wipe: true });
         cy.task('setupEmu');
         cy.task('startBridge');
-        if (!Cypress.env('KEEP_DB')) {
+        if (!keepDB) {
             cy.resetDb();
         }
         cy.prefixedVisit('/');
@@ -16,7 +18,7 @@ describe('Database migration', () => {
     it('Test data that should survive database migration', () => {
         // KEEP_DB env is falsy.
         // This block will execute only when testing the first TEST_URL
-        if (!Cypress.env('KEEP_DB')) {
+        if (!keepDB) {
             cy.passThroughInitialRun();
             cy.discoveryShouldFinish();
 

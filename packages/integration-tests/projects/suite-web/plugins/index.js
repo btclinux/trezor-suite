@@ -57,7 +57,7 @@ module.exports = on => {
         port = ensureRdpPort(args);
 
         if (browser.name === 'chrome') {
-            launchOptions.args.push('--disable-dev-shm-usage');
+            // launchOptions.args.push('--disable-dev-shm-usage');
             return launchOptions;
         }
 

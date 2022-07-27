@@ -7,9 +7,17 @@ import { Action } from '@suite-types';
  */
 export const resetDb = () => {
     cy.log('deleting database');
-    indexedDB.deleteDatabase('trezor-suite');
-    // todo: not sure if this is the correct way to make command chainable, probably not, will investigate
-    return cy;
+    const request = indexedDB.deleteDatabase('trezor-suite');
+
+    request.onerror = function () {
+        console.log('Error deleting database.');
+        return cy;
+    };
+
+    request.onsuccess = function () {
+        console.log('Database deleted successfully');
+        return cy;
+    };
 };
 
 export const dispatch = (action: Action) => {
