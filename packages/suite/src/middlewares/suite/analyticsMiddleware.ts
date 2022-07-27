@@ -114,7 +114,10 @@ const analyticsMiddleware =
                 break;
             }
             case ROUTER.LOCATION_CHANGE:
-                if (state.suite.lifecycle.status === 'ready') {
+                if (
+                    state.suite.lifecycle.status !== 'initial' &&
+                    state.suite.lifecycle.status !== 'loading'
+                ) {
                     analytics.report({
                         type: EventType.RouterLocationChange,
                         payload: {
