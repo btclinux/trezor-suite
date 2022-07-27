@@ -37,16 +37,13 @@ const init: Module = ({ mainWindow }) => {
         });
     });
 
-    // only for built app because restarting app breaks development process
-    if (!isDev) {
-        const restartAppShortcuts = ['Option+F5', 'Alt+F5', 'Option+Shift+R', 'Alt+Shift+R'];
-        restartAppShortcuts.forEach(shortcut => {
-            electronLocalshortcut.register(mainWindow, shortcut, () => {
-                logger.info('shortcuts', `${shortcut} pressed to restart app`);
-                restartApp();
-            });
+    const restartAppShortcuts = ['Option+F5', 'Alt+F5', 'Option+Shift+R', 'Alt+Shift+R'];
+    restartAppShortcuts.forEach(shortcut => {
+        electronLocalshortcut.register(mainWindow, shortcut, () => {
+            logger.info('shortcuts', `${shortcut} pressed to restart app`);
+            restartApp();
         });
-    }
+    });
 };
 
 export default init;

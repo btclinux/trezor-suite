@@ -73,11 +73,6 @@ if (!isDev) {
     mainMenuTemplate[2].submenu.splice(2, 1);
 }
 
-if (isDev) {
-    // remove Restart from "File"
-    mainMenuTemplate[0].submenu.splice(0, 1);
-}
-
 if (isMac) {
     // Extend "Edit"
     mainMenuTemplate[1].submenu.push(
