@@ -1,4 +1,4 @@
-import { encodeDataToQueryString, getRandomId, getUrl, reportEventWithRetry } from './utils';
+import { encodeDataToQueryString, getRandomId, getUrl, reportEvent } from './utils';
 
 import type { InitOptions, Event, App } from './types';
 
@@ -65,8 +65,13 @@ export class Analytics<T extends Event> {
         // try to report analytics event once again if the previous one fails
         // easy solution which should solve missing events on the launch of the app
         // if it does not help, then queue or more sophisticated solution should be implemented
-        reportEventWithRetry(data.type, `${this.url}?${qs}`, {
-            method: 'GET',
+        reportEvent({
+            type: data.type,
+            url: `${this.url}?${qs}`,
+            options: {
+                method: 'GET',
+            },
+            retry: true,
         });
     };
 }
