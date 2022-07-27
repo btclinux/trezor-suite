@@ -80,8 +80,8 @@ suite web migrations:
       - TEST_GROUP: "@group:migrations"
         CONTAINERS: "trezor-user-env-unix"
 
-suite web:
-  extends: .suite web base
+# suite web:
+#   extends: .suite web base
 
 suite web snapshots:
   extends: .suite web base
