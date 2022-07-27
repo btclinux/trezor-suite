@@ -1,5 +1,5 @@
 // @group:migrations
-// @retry=2
+// @retry=0
 
 describe('Database migration', () => {
     beforeEach(() => {
