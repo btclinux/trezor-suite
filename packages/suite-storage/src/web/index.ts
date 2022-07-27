@@ -79,7 +79,7 @@ class CommonDB<TDBStructure> {
                 const r = indexedDB.open('test');
                 r.onerror = () => resolve(false);
                 r.onsuccess = () => {
-                    indexedDB.deleteDatabase('test');
+                    // indexedDB.deleteDatabase('test');
                     resolve(true);
                 };
             } else {
@@ -162,7 +162,7 @@ class CommonDB<TDBStructure> {
                 });
             } catch (error) {
                 if (error && error.name === 'VersionError') {
-                    indexedDB.deleteDatabase(this.dbName);
+                    // indexedDB.deleteDatabase(this.dbName);
                     console.warn(
                         'IndexedDB was deleted because your version is higher than it should be (downgrade)',
                     );
