@@ -7,6 +7,9 @@ describe('Database migration', () => {
         cy.task('startEmu', { wipe: true });
         cy.task('setupEmu');
         cy.task('startBridge');
+        if (!Cypress.env('KEEP_DB')) {
+            cy.resetDb();
+        }
         cy.prefixedVisit('/');
     });
 
@@ -14,8 +17,6 @@ describe('Database migration', () => {
         // KEEP_DB env is falsy.
         // This block will execute only when testing the first TEST_URL
         if (!Cypress.env('KEEP_DB')) {
-            cy.resetDb();
-
             cy.passThroughInitialRun();
             cy.discoveryShouldFinish();
 
@@ -36,7 +37,7 @@ describe('Database migration', () => {
         // KEEP_DB env is truthy.
         // This block will execute only in every other run expect for the first one
         // It means that migration took place and we should see the same data
-        if (Cypress.env('KEEP_DB')) {
+        else {
             // asset data was loaded correctly from db
             cy.getTestElement('@dashboard/graph', { timeout: 30000 }).should('exist');
         }
