@@ -8,6 +8,10 @@ import { useBitcoinAmountUnit } from '@wallet-hooks/useBitcoinAmountUnit';
 import { NETWORKS } from '@wallet-config';
 import { NetworkSymbol } from '@wallet-types';
 
+const Container = styled.span`
+    max-width: 100%;
+`;
+
 const Value = styled.span`
     font-variant-numeric: tabular-nums;
     overflow: hidden;
@@ -43,8 +47,10 @@ export const FormattedCryptoAmount = ({
         return null;
     }
 
-    const symbolFeatures = NETWORKS.find(network => network.symbol === symbol)?.features;
-    const areSatsSupported = !!symbolFeatures?.includes('amount-unit');
+    const { features: networkFeatures, testnet: isTestnet } =
+        NETWORKS.find(network => network.symbol === symbol) ?? {};
+
+    const areSatsSupported = !!networkFeatures?.includes('amount-unit');
 
     let formattedValue = value;
     let formattedSymbol = symbol?.toUpperCase();
@@ -56,7 +62,7 @@ export const FormattedCryptoAmount = ({
             Number(networkAmountToSatoshi(String(value), symbol as NetworkSymbol)),
         ) as string;
 
-        formattedSymbol = symbol === 'btc' ? 'sat' : `sat ${symbol?.toUpperCase()}`;
+        formattedSymbol = isTestnet ? `sat ${symbol?.toUpperCase()}` : 'sat';
     }
 
     if (isRawString) {
@@ -69,13 +75,13 @@ export const FormattedCryptoAmount = ({
     }
 
     const content = (
-        <span className={className}>
+        <Container className={className}>
             {signValue && <Sign value={signValue} />}
 
             <Value data-test={dataTest}>{formattedValue}</Value>
 
             {symbol && <Symbol>&nbsp;{formattedSymbol}</Symbol>}
-        </span>
+        </Container>
     );
 
     if (disableHiddenPlaceholder) {
