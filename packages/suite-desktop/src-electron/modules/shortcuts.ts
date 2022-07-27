@@ -33,7 +33,7 @@ const init: Module = ({ mainWindow }) => {
     hardReloadAppShortcuts.forEach(shortcut => {
         electronLocalshortcut.register(mainWindow, shortcut, () => {
             logger.info('shortcuts', `${shortcut} pressed to hard reload app`);
-            mainWindow.webContents.reload();
+            mainWindow.webContents.reloadIgnoringCache();
         });
     });
 
