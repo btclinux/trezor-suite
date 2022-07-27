@@ -6,6 +6,7 @@ import { Action } from '@suite-types';
  * @example cy.resetDb()
  */
 export const resetDb = () => {
+    cy.log('deleting database');
     indexedDB.deleteDatabase('trezor-suite');
     // todo: not sure if this is the correct way to make command chainable, probably not, will investigate
     return cy;
