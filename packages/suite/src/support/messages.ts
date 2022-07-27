@@ -2406,6 +2406,10 @@ export default defineMessages({
         defaultMessage: 'unknown',
         id: 'TR_NETWORK_UNKNOWN',
     },
+    TR_NETWORK_UFO: {
+        defaultMessage: 'UFO',
+        id: 'TR_NETWORK_UFO',
+    },
     TR_NETWORK_VERTCOIN: {
         defaultMessage: 'Vertcoin',
         id: 'TR_NETWORK_VERTCOIN',

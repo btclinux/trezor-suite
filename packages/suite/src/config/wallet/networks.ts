@@ -185,6 +185,28 @@ const networks = {
         customBackends: ['blockbook'],
         accountTypes: {},
     },
+    ufo: {
+        name: 'UFO',
+        networkType: 'bitcoin',
+        bip43Path: "m/84'/202'/i'",
+        decimals: 8,
+        explorer: {
+            tx: 'https://ufo1.e4pool.com/tx/',
+            account: 'https://ufo1.e4pool.com/xpub/',
+        },
+        features: ['sign-verify'],
+        customBackends: ['blockbook', 'electrum'],
+        accountTypes: {
+            segwit: {
+                name: 'UFO (segwit)',
+                bip43Path: "m/49'/202'/i'",
+            },
+            legacy: {
+                name: 'UFO (legacy)',
+                bip43Path: "m/44'/202'/i'",
+            },
+        },
+    },
     vtc: {
         name: 'Vertcoin',
         networkType: 'bitcoin',

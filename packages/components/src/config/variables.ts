@@ -102,6 +102,7 @@ export const COINS: CoinType[] = [
     'tada',
     'trop',
     'txrp',
+    'ufo',
     'vtc',
     'xrp',
     'zec',

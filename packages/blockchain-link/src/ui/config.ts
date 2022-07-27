@@ -376,6 +376,29 @@ export default [
     },
     {
         blockchain: {
+            name: 'UFO',
+            worker: 'js/blockbook-worker.js',
+            server: [
+                'https://ufo1.e4pool.com'
+            ],
+            debug: true,
+        },
+        data: {
+            address: '',
+            accountInfoOptions: {
+                page: 0,
+                pageSize: 25,
+            },
+            estimateFeeOptions: {
+                blocks: [1, 2, 10],
+            },
+            txid: '',
+            tx: '',
+            subscribe: '',
+        },
+    },
+    {
+        blockchain: {
             name: 'Vertcoin',
             worker: 'js/blockbook-worker.js',
             server: [

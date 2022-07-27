@@ -15,6 +15,7 @@ export const COINS = {
     nmc: require('../../../images/coins/nmc.svg'),
     trop: require('../../../images/coins/trop.svg'),
     txrp: require('../../../images/coins/txrp.svg'),
+    ufo: require('../../../images/coins/ufo.svg'),
     vtc: require('../../../images/coins/vtc.svg'),
     xrp: require('../../../images/coins/xrp.svg'),
     zec: require('../../../images/coins/zec.svg'),

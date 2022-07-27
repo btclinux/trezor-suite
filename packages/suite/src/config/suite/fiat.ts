@@ -11,6 +11,7 @@ export default {
         { symbol: 'dash', coingeckoId: 'dash' },
         { symbol: 'dgb', coingeckoId: 'digibyte' },
         { symbol: 'doge', coingeckoId: 'dogecoin' },
+        { symbol: 'ufo', coingeckoId: 'ufocoin' },
         { symbol: 'vtc', coingeckoId: 'vertcoin' },
         { symbol: 'nmc', coingeckoId: 'namecoin' },
         { symbol: 'zec', coingeckoId: 'zcash' },

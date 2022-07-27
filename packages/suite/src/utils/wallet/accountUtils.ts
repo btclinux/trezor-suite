@@ -60,6 +60,8 @@ export const getTitleForNetwork = (symbol: Account['symbol']) => {
             return 'TR_NETWORK_LITECOIN';
         case 'nmc':
             return 'TR_NETWORK_NAMECOIN';
+        case 'ufo':
+            return 'TR_NETWORK_UFO';
         case 'vtc':
             return 'TR_NETWORK_VERTCOIN';
         case 'zec':
