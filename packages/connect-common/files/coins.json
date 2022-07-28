@@ -1996,7 +1996,7 @@
             "decimals": 8,
             "decred": false,
             "default_fee_b": {
-                "Normal": 1000
+                "Normal": 1
             },
             "dust_limit": 54600,
             "extra_data": false,

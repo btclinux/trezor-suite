@@ -195,7 +195,7 @@ const networks = {
             account: 'https://ufo1.e4pool.com/xpub/',
         },
         features: ['sign-verify'],
-        customBackends: ['blockbook', 'electrum'],
+        customBackends: ['blockbook'],
         accountTypes: {
             segwit: {
                 name: 'UFO (segwit)',
